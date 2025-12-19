@@ -1,99 +1,108 @@
-import { InlineKeyboard, InputFile } from "grammy";
+import { InlineKeyboard } from "grammy";
 import { readFileSync } from "fs";
+import { renderUI, playAudio, clearAudio } from "../ui/uiManager.js";
 
 const data = JSON.parse(
-    readFileSync(new URL("../data.json", import.meta.url))
+  readFileSync(new URL("../data.json", import.meta.url))
 );
 const insomniaTech = data.insomniaTech;
 
-// экспортируем объект с обработчиками
 export const insomniaCallbacks = {
 
-    insomniaAudio: async (ctx) => {
+  insomniaAudio: async (ctx) => {
+    await ctx.answerCallbackQuery();
 
-        await ctx.answerCallbackQuery();
-        await ctx.replyWithAudio(
-            new InputFile("src/media/chill.mp3"),
-        );
+    await playAudio(ctx, "src/media/chill.mp3");
 
-        await ctx.reply(
-            "Выбери действие:",
-            {
-                reply_markup: new InlineKeyboard()
-                    .text('🔙 Назад', 'insomnia').row()
-                    .text('🏠 В меню', 'menu')
-            }
-        );
-    },
+    await renderUI(
+      ctx,
+      "🎧 Аудио для сна запущено.\nВыбери действие:",
+      {
+        reply_markup: new InlineKeyboard()
+          .text('🔙 Назад', 'insomnia').row()
+          .text('🏠 В меню', 'menu')
+      }
+    );
+  },
 
-    insomniaRest: async (ctx) => {
+  insomniaRest: async (ctx) => {
+    await ctx.answerCallbackQuery();
 
-        await ctx.answerCallbackQuery();
-        await ctx.replyWithAudio(
-            new InputFile("src/media/chill.mp3"),
-        );
-        await ctx.reply(
-            "Выбери действие:",
-            {
-                reply_markup: new InlineKeyboard()
-                    .text('🔙 Назад', 'insomnia').row()
-                    .text('🏠 В меню', 'menu').row()
-            });
-    },
+    await playAudio(ctx, "src/media/chill.mp3");
 
-    insomniaSleep: async (ctx) => {
+    await renderUI(
+      ctx,
+      "🧘 Мышечная релаксация.\nВыбери действие:",
+      {
+        reply_markup: new InlineKeyboard()
+          .text('🔙 Назад', 'insomnia').row()
+          .text('🏠 В меню', 'menu')
+      }
+    );
+  },
 
-        await ctx.answerCallbackQuery();
-        await ctx.replyWithAudio(
-            new InputFile("src/media/chill.mp3")
-        );
-        await ctx.reply(
-            "Выбери действие:",
-            {
-            reply_markup: new InlineKeyboard()
-                .text('🔙 Назад', 'insomnia').row()
-                .text('🏠 В меню', 'menu').row()
-        });
-    },
+  insomniaSleep: async (ctx) => {
+    await ctx.answerCallbackQuery();
 
-    insomniaVisual: async (ctx) => {
+    await playAudio(ctx, "src/media/chill.mp3");
 
-        await ctx.answerCallbackQuery();
-        await ctx.replyWithAudio(
-            new InputFile("src/media/chill.mp3")
-        );
-        await ctx.reply(
-            "Выбери действие:",
-            {
-            reply_markup: new InlineKeyboard()
-                .text('🔙 Назад', 'insomnia').row()
-                .text('🏠 В меню', 'menu').row()
-        });
-    },
+    await renderUI(
+      ctx,
+      "🌬 Дыхание для сна.\nВыбери действие:",
+      {
+        reply_markup: new InlineKeyboard()
+          .text('🔙 Назад', 'insomnia').row()
+          .text('🏠 В меню', 'menu')
+      }
+    );
+  },
 
+  insomniaVisual: async (ctx) => {
+    await ctx.answerCallbackQuery();
 
-    insomniaList: async (ctx) => {
-        await ctx.answerCallbackQuery();
-        const keyboard = new InlineKeyboard();
-        insomniaTech.forEach((tech) => keyboard.text(tech.title, `tech_${tech.id}`).row());
-        keyboard.text('🔙 Назад', 'insomnia');
+    await playAudio(ctx, "src/media/chill.mp3");
 
-        await ctx.editMessageText('Выберите технику:', {
-            reply_markup: keyboard,
-        });
-    },
+    await renderUI(
+      ctx,
+      "📺 Визуальная медитация.\nВыбери действие:",
+      {
+        reply_markup: new InlineKeyboard()
+          .text('🔙 Назад', 'insomnia').row()
+          .text('🏠 В меню', 'menu')
+      }
+    );
+  },
 
-    tech: async (ctx) => {
-        await ctx.answerCallbackQuery();
-        const techId = Number(ctx.match[1]);
-        const tech = insomniaTech.find((t) => t.id === techId);
-        if (!tech) return;
+  insomniaList: async (ctx) => {
+    await ctx.answerCallbackQuery();
+    await clearAudio(ctx);
 
-        await ctx.editMessageText(`${tech.title}: \n\n${tech.content}`, {
-            reply_markup: new InlineKeyboard()
-                .text('🔄 Вернутся к списку', 'insomniaList').row()
-                .text('🔙 В меню тревоги', 'insomnia').row()
-                .text('🏠 В главное меню', 'menu').row(),
-        });
-    }
+    const keyboard = new InlineKeyboard();
+    insomniaTech.forEach(t =>
+      keyboard.text(t.title, `tech_${t.id}`).row()
+    );
+    keyboard.text('🔙 Назад', 'insomnia');
+
+    await renderUI(ctx, 'Выберите технику:', { reply_markup: keyboard });
+  },
+
+  tech: async (ctx) => {
+    await ctx.answerCallbackQuery();
+    await clearAudio(ctx);
+
+    const techId = Number(ctx.match[1]);
+    const tech = insomniaTech.find(t => t.id === techId);
+    if (!tech) return;
+
+    await renderUI(
+      ctx,
+      `${tech.title}:\n\n${tech.content}`,
+      {
+        reply_markup: new InlineKeyboard()
+          .text('🔄 Вернуться к списку', 'insomniaList').row()
+          .text('🔙 Назад', 'insomnia').row()
+          .text('🏠 В меню', 'menu')
+      }
+    );
+  },
 };

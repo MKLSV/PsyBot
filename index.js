@@ -8,17 +8,17 @@ import {
   panic,
   help
 } from './src/commands/index.js';
+import { renderUI, clearAudio } from './src/ui/uiManager.js';
 import { examCallbacks } from './src/callbacks/examCallbacks.js';
 import { stressCallbacks } from './src/callbacks/stressCallbacks.js';
 import { insomniaCallbacks } from './src/callbacks/insomniaCallbacks.js';
 import { panicCallbacks } from './src/callbacks/panicCallbacks.js';
 import { helpCallbacks } from './src/callbacks/helpCallbacks.js';
 
+
 const BOT_API_KEY = process.env.BOT_API_KEY;
 
 const bot = new Bot(BOT_API_KEY);
-
-bot.command('start', start);
 
 bot.use(session({
   initial: () => ({
@@ -27,10 +27,18 @@ bot.use(session({
   }),
 }));
 
-bot.callbackQuery('menu', async (ctx) => {
-  ctx.answerCallbackQuery();
+bot.command('start', start);
 
-  await ctx.editMessageText(
+
+bot.callbackQuery('menu', async (ctx) => {
+  await ctx.answerCallbackQuery();
+
+  // удаляем аудио, если есть
+  await clearAudio(ctx);
+
+  // рендерим главное меню
+  await renderUI(
+    ctx,
     'Выбери то, что чувствуешь сейчас:',
     {
       reply_markup: new InlineKeyboard()
@@ -38,8 +46,8 @@ bot.callbackQuery('menu', async (ctx) => {
         .text('⚡ Сильный стресс', 'stress').row()
         .text('🌙 Бессонница', 'insomnia').row()
         .text('💨 Паническая атака', 'panic').row()
-        .text('🤝 Помощь рядом', 'help').row(),
-    },
+        .text('🤝 Помощь рядом', 'help').row()
+    }
   );
 });
 
