@@ -16,7 +16,8 @@ import { panicCallbacks } from './src/callbacks/panicCallbacks.js';
 import { helpCallbacks } from './src/callbacks/helpCallbacks.js';
 
 
-const BOT_API_KEY = process.env.BOT_API_KEY;
+// const BOT_API_KEY = process.env.BOT_API_KEY;
+const BOT_API_KEY = "8348698964:AAEne4FM1YYqgCE6DSjqN0kkE042cHYGyZc";
 
 const bot = new Bot(BOT_API_KEY);
 
