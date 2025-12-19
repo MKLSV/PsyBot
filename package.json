@@ -12,7 +12,6 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@grammyjs/hydrate": "^1.4.1",
     "dotenv": "^16.4.7",
     "grammy": "^1.35.1",
     "nodemon": "^3.1.9"
