@@ -1,0 +1,16 @@
+import { InlineKeyboard } from "grammy";
+
+export const panic = async (ctx) => {
+  await ctx.answerCallbackQuery();
+  await ctx.editMessageText(
+    'Ты в безопасности. \nДавай сделаем технику, которая поможет вернуть контроль над дыханием и состоянием.',
+    {
+      reply_markup: new InlineKeyboard()
+        .text('💨 Восстановить дыхание', 'panicBreath').row()
+        .text('👀 Заземление', 'panicGrounding').row()
+        .text('🎧 Успокаивающий голос', 'panicChillVoice').row()
+        .text('❗ Мне хуже (показывает горячую линию)', 'panicAlarm').row()
+        .text('🔙 Назад', 'menu').row()
+    },
+  );
+};
