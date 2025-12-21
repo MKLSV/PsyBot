@@ -15,10 +15,10 @@ export const examCallbacks = {
 
     let random;
     do {
-      random = stressTech[Math.floor(Math.random() * stressTech.length)];
-    } while (ctx.session.lastStressTechId === random.id && stressTech.length > 1);
+      random = examTech[Math.floor(Math.random() * examTech.length)];
+    } while (ctx.session.lastExamTechId === random.id && examTech.length > 1);
 
-    ctx.session.lastStressTechId = random.id;
+    ctx.session.lastExamTechId = random.id;
 
     await renderUI(
       ctx,
