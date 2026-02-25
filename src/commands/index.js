@@ -1,4 +1,5 @@
 export * from './start.js'
+export * from './admin.js'
 export * from './examAnxiety.js'
 export * from '../callbacks/examCallbacks.js'
 export * from './stress.js'

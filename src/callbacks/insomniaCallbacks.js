@@ -5,7 +5,7 @@ import { renderUI, playAudio, clearAudio } from "../ui/uiManager.js";
 const data = JSON.parse(
   readFileSync(new URL("../data.json", import.meta.url))
 );
-const insomniaTech = data.insomniaTech;
+const insomniaTechList = data.insomniaTech;
 
 export const insomniaCallbacks = {
 
@@ -78,20 +78,20 @@ export const insomniaCallbacks = {
     await clearAudio(ctx);
 
     const keyboard = new InlineKeyboard();
-    insomniaTech.forEach(t =>
-      keyboard.text(t.title, `tech_${t.id}`).row()
+    insomniaTechList.forEach(t =>
+      keyboard.text(t.title, `insomniaTech_${t.id}`).row()
     );
     keyboard.text('🔙 Назад', 'insomnia');
 
     await renderUI(ctx, 'Выберите технику:', { reply_markup: keyboard });
   },
 
-  tech: async (ctx) => {
+  insomniaTech: async (ctx) => {
     await ctx.answerCallbackQuery();
     await clearAudio(ctx);
 
     const techId = Number(ctx.match[1]);
-    const tech = insomniaTech.find(t => t.id === techId);
+    const tech = insomniaTechList.find(t => t.id === techId);
     if (!tech) return;
 
     await renderUI(

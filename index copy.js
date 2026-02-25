@@ -6,18 +6,14 @@ import {
   stress,
   insomnia,
   panic,
-  help,
-  admin
+  help
 } from './src/commands/index.js';
-import mongoose from 'mongoose';
 import { renderUI, clearAudio } from './src/ui/uiManager.js';
 import { examCallbacks } from './src/callbacks/examCallbacks.js';
 import { stressCallbacks } from './src/callbacks/stressCallbacks.js';
 import { insomniaCallbacks } from './src/callbacks/insomniaCallbacks.js';
 import { panicCallbacks } from './src/callbacks/panicCallbacks.js';
 import { helpCallbacks } from './src/callbacks/helpCallbacks.js';
-import { Stat } from './src/models/Stat.js';
-import { User } from './src/models/User.js';
 
 
 const BOT_API_KEY = process.env.BOT_API_KEY;
@@ -31,65 +27,11 @@ bot.use(session({
   }),
 }));
 
-await mongoose.connect(process.env.MONGO_URI, {
-  dbName: 'telegram-bot',
-});
-
-console.log('✅ MongoDB connected');
-
-// Запись в БД
-bot.use(async (ctx, next) => {
-  if (!ctx.from) return next();
-
-  const tgUser = ctx.from;
-  const today = new Date().toISOString().slice(0, 10);
-
-  let user = await User.findOne({ telegramId: tgUser.id });
-
-  if (!user) {
-    // Новый пользователь
-    user = await User.create({
-      telegramId: tgUser.id,
-      username: tgUser.username,
-      firstName: tgUser.first_name,
-      lastName: tgUser.last_name,
-    });
-
-    await Stat.updateOne(
-      { date: today },
-      {
-        $inc: {
-          visits: 1,
-          uniqueUsers: 1,
-        },
-      },
-      { upsert: true }
-    );
-  } else {
-    // Возвратный пользователь
-    user.lastVisitAt = new Date();
-    user.visitsCount += 1;
-    user.isActive = true;
-    await user.save();
-
-    await Stat.updateOne(
-      { date: today },
-      { $inc: { visits: 1 } },
-      { upsert: true }
-    );
-  }
-
-  return next();
-});
-
-
 bot.command('start', start);
 
-//ADMIN CALLBACK
-bot.command('admin', admin);
 
 bot.callbackQuery('menu', async (ctx) => {
-   ctx.answerCallbackQuery();
+  await ctx.answerCallbackQuery();
 
   // удаляем аудио, если есть
   await clearAudio(ctx);
@@ -109,14 +51,13 @@ bot.callbackQuery('menu', async (ctx) => {
   );
 });
 
-
 // EXAM CALLBACKS
 bot.callbackQuery('examAnxiety', examAnxiety);
 
 bot.callbackQuery('examRandom', examCallbacks.examRandom);
 bot.callbackQuery('examList', examCallbacks.examList);
 bot.callbackQuery('examTest', examCallbacks.examTest);
-bot.callbackQuery(/examTech_(.+)/, examCallbacks.examTech);
+bot.callbackQuery(/tech_(.+)/, examCallbacks.tech);
 
 // STRESS CALLBACKS
 bot.callbackQuery('stress', stress);
@@ -125,7 +66,7 @@ bot.callbackQuery('stressRandom', stressCallbacks.stressRandom);
 bot.callbackQuery('stressList', stressCallbacks.stressList);
 bot.callbackQuery('stressEmergency', stressCallbacks.stressEmergency);
 bot.callbackQuery('stressAudio', stressCallbacks.stressAudio);
-bot.callbackQuery(/stressTech_(.+)/, stressCallbacks.stressTech);
+bot.callbackQuery(/tech_(.+)/, stressCallbacks.tech);
 
 
 // INSOMNIA CALLBACKS
@@ -136,7 +77,7 @@ bot.callbackQuery('insomniaRest', insomniaCallbacks.insomniaRest);
 bot.callbackQuery('insomniaSleep', insomniaCallbacks.insomniaSleep);
 bot.callbackQuery('insomniaVisual', insomniaCallbacks.insomniaVisual);
 bot.callbackQuery('insomniaList', insomniaCallbacks.insomniaList);
-bot.callbackQuery(/insomniaTech_(.+)/, insomniaCallbacks.insomniaTech);
+bot.callbackQuery(/tech_(.+)/, insomniaCallbacks.tech);
 
 
 // PANIC CALLBACKS
@@ -201,7 +142,4 @@ bot.catch((err) => {
 // }
 
 // startBot();
-
-
-
 bot.start();

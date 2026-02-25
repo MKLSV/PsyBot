@@ -5,7 +5,7 @@ import { renderUI, playAudio, clearAudio } from "../ui/uiManager.js";
 const data = JSON.parse(
     readFileSync(new URL("../data.json", import.meta.url))
 );
-const stressTech = data.stressTech;
+const stressTechList = data.stressTech;
 
 export const stressCallbacks = {
 
@@ -15,8 +15,8 @@ export const stressCallbacks = {
 
         let random;
         do {
-            random = stressTech[Math.floor(Math.random() * stressTech.length)];
-        } while (ctx.session.lastStressTechId === random.id && stressTech.length > 1);
+            random = stressTechList[Math.floor(Math.random() * stressTechList.length)];
+        } while (ctx.session.lastStressTechId === random.id && stressTechList.length > 1);
 
         ctx.session.lastStressTechId = random.id;
         await renderUI(
@@ -36,7 +36,7 @@ export const stressCallbacks = {
         await clearAudio(ctx);
 
         const keyboard = new InlineKeyboard();
-        stressTech.forEach((tech) => keyboard.text(tech.title, `tech_${tech.id}`).row());
+        stressTechList.forEach((tech) => keyboard.text(tech.title, `stressTech_${tech.id}`).row());
         keyboard.text('🔙 Назад', 'stress');
 
         await renderUI(ctx, 'Выберите технику:', { reply_markup: keyboard });
@@ -73,12 +73,12 @@ export const stressCallbacks = {
         );
     },
 
-    tech: async (ctx) => {
+    stressTech: async (ctx) => {
         await ctx.answerCallbackQuery();
         await clearAudio(ctx);
 
         const techId = Number(ctx.match[1]);
-        const tech = stressTech.find((t) => t.id === techId);
+        const tech = stressTechList.find((t) => t.id === techId);
         if (!tech) return;
 
         await renderUI(
@@ -87,7 +87,7 @@ export const stressCallbacks = {
             {
                 reply_markup: new InlineKeyboard()
                     .text('🔄 Вернуться к списку', 'stressList').row()
-                    .text('🔙 Назад', 'stress').row()
+                    .text('🔙 В меню стресс', 'stress').row()
                     .text('🏠 В главное меню', 'menu').row()
             }
         );

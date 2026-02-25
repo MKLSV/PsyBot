@@ -2,6 +2,7 @@ import { InlineKeyboard } from "grammy";
 import { renderUI } from "../ui/uiManager.js";
 
 export const start = async (ctx) => {
+  // console.log(ctx.from)
   try {
     const keyboard = new InlineKeyboard().text('Меню', 'menu');
 

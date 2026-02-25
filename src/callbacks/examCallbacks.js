@@ -5,18 +5,18 @@ import { renderUI, clearAudio } from "../ui/uiManager.js";
 const data = JSON.parse(
   readFileSync(new URL("../data.json", import.meta.url))
 );
-const examTech = data.examTech;
+const examTechList = data.examTech;
 
 export const examCallbacks = {
 
   examRandom: async (ctx) => {
-    await ctx.answerCallbackQuery();
+    ctx.answerCallbackQuery();
     await clearAudio(ctx);
 
     let random;
     do {
-      random = examTech[Math.floor(Math.random() * examTech.length)];
-    } while (ctx.session.lastExamTechId === random.id && examTech.length > 1);
+      random = examTechList[Math.floor(Math.random() * examTechList.length)];
+    } while (ctx.session.lastExamTechId === random.id && examTechList.length > 1);
 
     ctx.session.lastExamTechId = random.id;
 
@@ -33,18 +33,18 @@ export const examCallbacks = {
   },
 
   examList: async (ctx) => {
-    await ctx.answerCallbackQuery();
+    ctx.answerCallbackQuery();
     await clearAudio(ctx);
 
     const keyboard = new InlineKeyboard();
-    examTech.forEach((tech) => keyboard.text(tech.title, `tech_${tech.id}`).row());
+    examTechList.forEach((tech) => keyboard.text(tech.title, `examTech_${tech.id}`).row());
     keyboard.text('🔙 Назад', 'examAnxiety');
 
     await renderUI(ctx, 'Выберите технику:', { reply_markup: keyboard });
   },
 
   examTest: async (ctx) => {
-    await ctx.answerCallbackQuery();
+    ctx.answerCallbackQuery();
     await clearAudio(ctx);
 
     await renderUI(
@@ -58,12 +58,12 @@ export const examCallbacks = {
     );
   },
 
-  tech: async (ctx) => {
-    await ctx.answerCallbackQuery();
+  examTech: async (ctx) => {
+    ctx.answerCallbackQuery();
     await clearAudio(ctx);
 
     const techId = Number(ctx.match[1]);
-    const tech = examTech.find((t) => t.id === techId);
+    const tech = examTechList.find((t) => t.id === techId);
     if (!tech) return;
 
     await renderUI(
