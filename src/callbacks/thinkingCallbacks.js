@@ -15,7 +15,7 @@ export const thinkingList = async (ctx) => {
   thinkingTechList.forEach((t) =>
     keyboard.text(t.title, `thinkingTech_${t.id}`).row()
   );
-  keyboard.text("🔙 Назад", "menu");
+  keyboard.text("Назад", "menu");
 
   if (ctx.callbackQuery?.message?.photo) {
     try { await ctx.deleteMessage(); } catch { }

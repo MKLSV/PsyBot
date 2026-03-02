@@ -5,7 +5,10 @@ export const start = async (ctx) => {
   const { id, username, first_name } = ctx.from;
   upsertUser(id, username, first_name);
 
-  const keyboard = new InlineKeyboard().text("Меню", "menu");
+  const keyboard = new InlineKeyboard()
+  .text("Меню", "menu").row()
+  .text("Психологические службы", "psyServices").row()
+  .text("Горячие линии", "hotlines").row();
 
   try {
     if (ctx.session?.uiMessageId) {
