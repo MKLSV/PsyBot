@@ -1,49 +1,60 @@
 import { InlineKeyboard, InputFile } from "grammy";
 import { readFileSync } from "fs";
 import path from "path";
+import { getCachedFileId, setCachedFileId } from "../utils/photoCache.js";
 
 const data = JSON.parse(
-    readFileSync(new URL("../data.json", import.meta.url))
+  readFileSync(new URL("../data.json", import.meta.url))
 );
 const emotionsTechList = data.emotionsTech;
 
 export const emotionsList = async (ctx) => {
+  await ctx.answerCallbackQuery();
 
-    await ctx.answerCallbackQuery();
+  const keyboard = new InlineKeyboard();
+  emotionsTechList.forEach((tech) => keyboard.text(tech.title, `emotionsTech_${tech.id}`).row());
+  keyboard.text("Назад", "menu");
 
-    const keyboard = new InlineKeyboard();
-    emotionsTechList.forEach((tech) => keyboard.text(tech.title, `emotionsTech_${tech.id}`).row());
-    keyboard.text('Назад', 'menu');
-
-    if (ctx.callbackQuery?.message?.photo) {
-        try { await ctx.deleteMessage(); } catch { }
-        await ctx.reply('Выберите свое состояние:', { reply_markup: keyboard });
-    } else {
-        await ctx.editMessageText('Выберите свое состояние:', { reply_markup: keyboard });
-    }
-}
-
-
+  if (ctx.callbackQuery?.message?.photo) {
+    try { await ctx.deleteMessage(); } catch { }
+    await ctx.reply("Выберите свое состояние:", { reply_markup: keyboard });
+  } else {
+    await ctx.editMessageText("Выберите свое состояние:", { reply_markup: keyboard });
+  }
+};
 
 export const emotionsTech = async (ctx) => {
-    await ctx.answerCallbackQuery();
+  await ctx.answerCallbackQuery();
 
-    const techId = Number(ctx.match[1]);
-    const tech = emotionsTechList.find((t) => t.id === techId);
-    if (!tech) return;
+  const techId = Number(ctx.match[1]);
+  const tech = emotionsTechList.find((t) => t.id === techId);
+  if (!tech) return;
 
-    // Абсолютный путь, чтобы не было ENOENT
-    const filePath = path.join(process.cwd(), tech.image);
+  const filePath = path.join(process.cwd(), tech.image);
+  const keyboard = new InlineKeyboard()
+    .text("Назад", "emotionsList").row()
+    .text("В меню", "menu");
 
+  const cachedId = getCachedFileId(filePath);
+
+  try {
     await ctx.editMessageMedia(
-        {
-            type: "photo",
-            media: new InputFile(filePath),
-        },
-        {
-            reply_markup: new InlineKeyboard()
-                .text('Назад', 'emotionsList').row()
-                .text('В меню', 'menu')
-        }
+      { type: "photo", media: cachedId ?? new InputFile(filePath) },
+      { reply_markup: keyboard }
     );
-}
+
+    if (!cachedId) {
+      const fileId = ctx.callbackQuery.message?.photo?.at(-1)?.file_id;
+      if (fileId) setCachedFileId(filePath, fileId);
+    }
+  } catch (err) {
+    console.error("[emotionsTech] editMessageMedia error:", err.message);
+    try { await ctx.deleteMessage(); } catch { }
+    const sent = await ctx.replyWithPhoto(
+      cachedId ?? new InputFile(filePath),
+      { reply_markup: keyboard }
+    );
+    const fileId = sent.photo?.at(-1)?.file_id;
+    if (fileId) setCachedFileId(filePath, fileId);
+  }
+};
