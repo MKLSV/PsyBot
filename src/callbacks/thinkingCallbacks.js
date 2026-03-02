@@ -5,16 +5,17 @@ import path from "path";
 const data = JSON.parse(
   readFileSync(new URL("../data.json", import.meta.url))
 );
-const examTechList = data.examTech;
+const thinkingTechList = data.thinkingTech;
 
-export const examList = async (ctx) => {
+export const thinkingList = async (ctx) => {
 
   await ctx.answerCallbackQuery();
 
   const keyboard = new InlineKeyboard();
-  examTechList.forEach((tech) => keyboard.text(tech.title, `examTech_${tech.id}`).row());
-  keyboard.text('Назад', 'menu');
-
+  thinkingTechList.forEach(t =>
+    keyboard.text(t.title, `thinkingTech_${t.id}`).row()
+  );
+  keyboard.text('🔙 Назад', 'menu');
   if (ctx.callbackQuery?.message?.photo) {
     try { await ctx.deleteMessage(); } catch { }
     await ctx.reply('Выберите свое состояние:', { reply_markup: keyboard });
@@ -25,17 +26,17 @@ export const examList = async (ctx) => {
 
 
 
-
-export const examTech = async (ctx) => {
-  await ctx.answerCallbackQuery();
+export const thinkingTech = async (ctx) => {
+  ctx.answerCallbackQuery();
 
   const techId = Number(ctx.match[1]);
-  const tech = examTechList.find((t) => t.id === techId);
+  const tech = thinkingTechList.find(t => t.id === techId);
   if (!tech) return;
 
   // Абсолютный путь, чтобы не было ENOENT
   const filePath = path.join(process.cwd(), tech.image);
 
+  // Заменяем текущее сообщение на фото (без текста)
   await ctx.editMessageMedia(
     {
       type: "photo",

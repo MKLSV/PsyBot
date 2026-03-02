@@ -1,20 +1,22 @@
+
+
 import { InlineKeyboard } from "grammy";
-import { renderUI } from "../ui/uiManager.js";
 
 export const start = async (ctx) => {
-  // console.log(ctx.from)
+
   try {
     const keyboard = new InlineKeyboard().text('Меню', 'menu');
-
-    await renderUI(
-      ctx,
-      'Привет! \nЯ помогу тебе справиться со стрессом, тревогой, паническими атаками и подготовкой к экзаменам.',
-      {
-        reply_markup: keyboard,
-      }
-    );
-  } catch (error) {
-    console.log(error)
-    ctx.reply('Произошла ошибка, попробуйте позже');
+    if (ctx.session.uiMessageId) {
+      await ctx.editMessageText('Привет! \nЯ помогу тебе справиться со стрессом, тревогой, паническими атаками и подготовкой к экзаменам.', { reply_markup: keyboard, });
+    } else {
+      const msg = await ctx.reply('Привет! \nЯ помогу тебе справиться со стрессом, тревогой, паническими атаками и подготовкой к экзаменам.', { reply_markup: keyboard, });
+      ctx.session.uiMessageId = msg.message_id;
+    }
+  } catch {
+    const msg = await ctx.reply('Привет! \nЯ помогу тебе справиться со стрессом, тревогой, паническими атаками и подготовкой к экзаменам.', { reply_markup: keyboard, });
+    ctx.session.uiMessageId = msg.message_id;
   }
+
 };
+
+
