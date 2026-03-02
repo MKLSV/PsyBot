@@ -1,10 +1,15 @@
-import { User } from "../models/User.js";
+import { getActiveUsersCount, getUserCount } from "../../database.js";
 
 export const admin = async (ctx) => {
     if (ctx.from.id == "555207329") {
         try {
-            const totalUsers = await User.countDocuments();
-            ctx.reply(totalUsers)
+            const total = getUserCount();
+            const active = getActiveUsersCount();
+            ctx.reply(
+                `📊 Статистика бота:\n\n` +
+                `👥 Всего пользователей: ${total}\n` +
+                `🟢 Активных за последний месяц: ${active}`
+            );
         } catch (error) {
             console.log(error)
             ctx.reply('Произошла ошибка, попробуйте позже');

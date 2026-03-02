@@ -1,6 +1,10 @@
 import { InlineKeyboard } from "grammy";
-
+import { upsertUser } from "../../database.js";
 export const start = async (ctx) => {
+
+  const { id, username, first_name } = ctx.from;
+  upsertUser(id, username, first_name);
+
   const keyboard = new InlineKeyboard().text("Меню", "menu");
 
   try {
