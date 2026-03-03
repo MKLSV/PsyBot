@@ -8,6 +8,7 @@ import { emotionsList, emotionsTech } from "./src/callbacks/emotionsCallbacks.js
 import { thinkingList, thinkingTech } from "./src/callbacks/thinkingCallbacks.js";
 import { bodyStressList, bodyStressTech } from "./src/callbacks/bodyStressCallbacks.js";
 import { upsertUser } from "./database.js";
+import { audioList, audioTech } from "./src/callbacks/audioCallback.js";
 
 const BOT_API_KEY = process.env.BOT_API_KEY;
 
@@ -53,7 +54,7 @@ bot.callbackQuery("menu", async (ctx) => {
     try { await ctx.deleteMessage(); } catch { }
     await ctx.reply("Выбери технику:", { reply_markup: keyboard });
   } else {
-    await ctx.editMessageText("Выбери технику:", { reply_markup: keyboard });
+    await ctx.editMessageText("Выбери то, что чувствуешь сейчас:", { reply_markup: keyboard });
   }
 });
 
@@ -116,8 +117,12 @@ bot.callbackQuery(/^thinkingTech_(.+)$/, thinkingTech);
 // ─── Body Stress ─────────────────────────────────────────────────────────────
 
 bot.callbackQuery("bodyStressList", bodyStressList);
-// БАГ ИСПРАВЛЕН: было строкой 'bodyStressTech' — ctx.match[1] всегда undefined
 bot.callbackQuery(/^bodyStressTech_(.+)$/, bodyStressTech);
+
+// ─── Audio ─────────────────────────────────────────────────────────────
+
+bot.callbackQuery("audioList", audioList);
+bot.callbackQuery(/^audioTech_(.+)$/, audioTech);
 
 // ─── Любое сообщение ─────────────────────────────────────────────────────────
 

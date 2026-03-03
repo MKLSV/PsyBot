@@ -19,9 +19,9 @@ export const bodyStressList = async (ctx) => {
 
   if (ctx.callbackQuery?.message?.photo) {
     try { await ctx.deleteMessage(); } catch { }
-    await ctx.reply("Выберите свое состояние:", { reply_markup: keyboard });
+    await ctx.reply("Выберите технику:", { reply_markup: keyboard });
   } else {
-    await ctx.editMessageText("Выберите свое состояние:", { reply_markup: keyboard });
+    await ctx.editMessageText("Выберите технику:", { reply_markup: keyboard });
   }
 };
 

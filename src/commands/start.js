@@ -7,7 +7,7 @@ export const start = async (ctx) => {
 
   const keyboard = new InlineKeyboard()
   .text("Техники самопомощи", "menu").row()
-  .text("Аудио техники", "menu").row()
+  .text("Аудио техники", "audioList").row()
   .text("Психологические службы в Казани", "psyServices").row()
   .text("Помощь по телефону", "hotlines").row();
 
