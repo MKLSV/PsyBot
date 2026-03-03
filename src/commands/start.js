@@ -6,9 +6,10 @@ export const start = async (ctx) => {
   upsertUser(id, username, first_name);
 
   const keyboard = new InlineKeyboard()
-  .text("Меню", "menu").row()
-  .text("Психологические службы", "psyServices").row()
-  .text("Горячие линии", "hotlines").row();
+  .text("Техники самопомощи", "menu").row()
+  .text("Аудио техники", "menu").row()
+  .text("Психологические службы в Казани", "psyServices").row()
+  .text("Помощь по телефону", "hotlines").row();
 
   try {
     if (ctx.session?.uiMessageId) {

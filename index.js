@@ -51,9 +51,9 @@ bot.callbackQuery("menu", async (ctx) => {
 
   if (ctx.callbackQuery?.message?.photo) {
     try { await ctx.deleteMessage(); } catch { }
-    await ctx.reply("Выбери то, что чувствуешь сейчас:", { reply_markup: keyboard });
+    await ctx.reply("Выбери технику:", { reply_markup: keyboard });
   } else {
-    await ctx.editMessageText("Выбери то, что чувствуешь сейчас:", { reply_markup: keyboard });
+    await ctx.editMessageText("Выбери технику:", { reply_markup: keyboard });
   }
 });
 

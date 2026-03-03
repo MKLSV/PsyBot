@@ -35,7 +35,13 @@ export function upsertUser(telegramId, username, firstName) {
 }
 
 export function getUserCount() {
+  // getAllUsers();
   return db.prepare("SELECT COUNT(*) as count FROM users").get().count;
+}
+
+export function getAllUsers() {
+  const users = db.prepare("SELECT telegram_id, username, first_name, joined_at FROM users ORDER BY joined_at DESC").all();
+  console.log(users)
 }
 
 export function getActiveUsersCount() {

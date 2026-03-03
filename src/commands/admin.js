@@ -1,7 +1,7 @@
 import { getActiveUsersCount, getUserCount } from "../../database.js";
 
 export const admin = async (ctx) => {
-    if (ctx.from.id == "555207329") {
+    if (ctx.from.id == "555207329" || ctx.from.id == "481933828") {
         try {
             const total = getUserCount();
             const active = getActiveUsersCount();
@@ -10,6 +10,8 @@ export const admin = async (ctx) => {
                 `👥 Всего пользователей: ${total}\n` +
                 `🟢 Активных за последний месяц: ${active}`
             );
+            console.log(ctx.from.first_name, ' Просмотрел статистику')
+
         } catch (error) {
             console.log(error)
             ctx.reply('Произошла ошибка, попробуйте позже');
