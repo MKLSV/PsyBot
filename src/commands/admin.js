@@ -25,3 +25,26 @@ export const admin = async (ctx) => {
 
     }
 };
+
+
+
+export const adminAll = async (ctx) => {
+
+  if (ctx.from.id !== "555207329") {
+    return ctx.reply("⛔ Нет доступа");
+  }
+
+  const users = await getAllUsers();
+
+  if (!users.length) {
+    return ctx.reply("База данных пуста");
+  }
+
+  const text = users
+    .map((u) => `👤 *${u.first_name}*\n🆔 \`${u.telegram_id}\`\n📛 @${u.username || "нет"}`)
+    .join("\n\n");
+
+  await ctx.reply(`👥 *Все пользователи (${users.length}):*\n\n${text}`, {
+    parse_mode: "Markdown",
+  });
+};

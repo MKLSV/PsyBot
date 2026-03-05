@@ -9,13 +9,13 @@ import { thinkingList, thinkingTech } from "./src/callbacks/thinkingCallbacks.js
 import { bodyStressList, bodyStressTech } from "./src/callbacks/bodyStressCallbacks.js";
 import { upsertUser } from "./database.js";
 import { audioList, audioTech } from "./src/callbacks/audioCallback.js";
+import { initDb } from "./database.js";
 
 const BOT_API_KEY = process.env.BOT_API_KEY;
 
 if (!BOT_API_KEY) {
   throw new Error("BOT_API_KEY is not defined in .env");
 }
-
 const bot = new Bot(BOT_API_KEY);
 
 const data = JSON.parse(
@@ -23,6 +23,8 @@ const data = JSON.parse(
 );
 
 const { psyInfo, hotlines } = data;
+
+await initDb();
 
 // ─── Команды ────────────────────────────────────────────────────────────────
 
@@ -41,7 +43,7 @@ bot.callbackQuery("menu", async (ctx) => {
   await ctx.answerCallbackQuery();
 
   const { id, username, first_name } = ctx.from;
-  upsertUser(id, username, first_name);
+  await upsertUser(id, username, first_name);
 
   const keyboard = new InlineKeyboard()
     .text("Перед экзаменом и на экзамене", "examList").row()
