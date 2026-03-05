@@ -30,9 +30,6 @@ export const admin = async (ctx) => {
 
 export const adminAll = async (ctx) => {
 
-    // if (ctx.from.id !== "555207329") {
-    //     return ctx.reply("⛔ Нет доступа");
-    // }
 
     const users = await getAllUsers();
 
@@ -41,10 +38,10 @@ export const adminAll = async (ctx) => {
     }
 
     const text = users
-        .map((u) => `👤 *${u.first_name}*\n🆔 \`${u.telegram_id}\`\n📛 @${u.username || "нет"}`)
+        .map((u) => `👤 <b>${u.first_name}</b>\n🆔 <code>${u.telegram_id}</code>\n📛 @${u.username || "нет"}`)
         .join("\n\n");
 
-    await ctx.reply(`👥 *Все пользователи (${users.length}):*\n\n${text}`, {
-        parse_mode: "Markdown",
+    await ctx.reply(`👥 <b>Все пользователи (${users.length}):</b>\n\n${text}`, {
+        parse_mode: "HTML",
     });
 };
