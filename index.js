@@ -2,7 +2,7 @@ import "dotenv/config";
 import { readFileSync } from "fs";
 import { Bot, GrammyError, HttpError, InlineKeyboard } from "grammy";
 import { start } from "./src/commands/start.js";
-import { admin } from "./src/commands/admin.js";
+import { admin, adminAll } from "./src/commands/admin.js";
 import { examList, examTech } from "./src/callbacks/examCallbacks.js";
 import { emotionsList, emotionsTech } from "./src/callbacks/emotionsCallbacks.js";
 import { thinkingList, thinkingTech } from "./src/callbacks/thinkingCallbacks.js";
@@ -30,6 +30,7 @@ await initDb();
 
 bot.command("start", start);
 bot.command("admin", admin);
+bot.command("admin_all", adminAll);
 
 bot.callbackQuery("start", async (ctx) => {
   await ctx.answerCallbackQuery();
